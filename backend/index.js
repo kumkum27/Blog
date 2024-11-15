@@ -173,9 +173,24 @@ app.get("/api/profile", (req, res) => {
 
 
 
-app.post("/api/logout",(req,res)=>{
-    res.cookie('token','').json("ok");
-})
+// app.post("/api/logout",(req,res)=>{
+//     res.cookie('token','').json("ok");
+// })
+
+
+app.post("/api/logout", (req, res) => {
+    res.cookie('token', '', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production', // Match the same attributes as used during login
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        maxAge: 0, // Immediate expiration
+        path: '/' // Ensure it matches the login path
+    }).json("Logged out");
+});
+
+
+
+
 
 app.post('/api/post', uploadMiddleware.single('file'), async (req, res) => {
     const { title, summary, content, tags } = req.body;
