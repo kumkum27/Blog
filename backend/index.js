@@ -111,15 +111,22 @@ app.post('/api/login', async(req,res)=>{
     
 })
 
-app.get("/api/profile",(req,res)=>{
-    const {token}=req.cookies;
-    jwt.verify(token, secret, {}, (err, info) => {
-    if (err) {
-        console.log("Token verification failed", err);
-        return res.status(401).json("Unauthorized");
+app.get("/api/profile", (req, res) => {
+    const { token } = req.cookies;
+
+    if (!token) {
+        return res.status(401).json("Token not found");
     }
-    res.json(info);
+
+    jwt.verify(token, secret, {}, (err, info) => {
+        if (err) {
+            console.log("JWT Verification Error:", err);
+            return res.status(401).json("Unauthorized");
+        }
+        res.json(info);
+    });
 });
+
 
     // res.json(req.cookies);
 })
