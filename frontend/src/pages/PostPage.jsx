@@ -38,20 +38,48 @@ const PostPage = () => {
         fetchData();
     }, [id, userInfo?.id]);
 
-    const addComment = async () => {
-        const response = await fetch(`${API_URL}/post/${id}/comment`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ content: commentText }),
-            credentials: 'include'
-        });
+    // const addComment = async () => {
+    //     const response = await fetch(`${API_URL}/post/${id}/comment`, {
+    //         method: 'POST',
+    //         headers: { 'Content-Type': 'application/json' },
+    //         body: JSON.stringify({ content: commentText }),
+    //         credentials: 'include'
+    //     });
 
-        if (response.ok) {
-            const newComment = await response.json();
-            setComments([...comments, newComment]);
-            setCommentText('');
-        }
-    };
+    //     if (response.ok) {
+    //         const newComment = await response.json();
+    //         setComments([...comments, newComment]);
+    //         setCommentText('');
+    //     }
+    // };
+
+
+
+
+const addComment = async () => {
+    const response = await fetch(`${API_URL}/post/${id}/comment`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: commentText }),
+        credentials: 'include'
+    });
+
+    if (!response.ok) {
+        const error = await response.json();
+        console.error('Error adding comment:', error);
+        return;
+    }
+
+    const newComment = await response.json();
+    setComments([...comments, newComment]);
+    setCommentText('');
+};
+
+
+
+
+
+    
 
     const deleteComment = async (commentId) => {
         const response = await fetch(`${API_URL}/comment/${commentId}`, {
