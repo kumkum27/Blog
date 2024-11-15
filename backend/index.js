@@ -54,7 +54,7 @@ mongoose.connect(process.env.MONGO_URI);
 // })
 
 
-app.post('/register', async(req,res)=>{
+app.post('/api/register', async(req,res)=>{
     const {username,password}=req.body;
     try{
         const userDoc=await users.create({
@@ -70,7 +70,7 @@ app.post('/register', async(req,res)=>{
 
 });
 
-app.post('/login', async(req,res)=>{
+app.post('/api/login', async(req,res)=>{
     const {username,password}=req.body;
     try{
     const userDoc= await users.findOne({username});
@@ -93,7 +93,7 @@ app.post('/login', async(req,res)=>{
     
 })
 
-app.get("/profile",(req,res)=>{
+app.get("/api/profile",(req,res)=>{
     const {token}=req.cookies;
     jwt.verify(token, secret,{},(err,info)=>{
         if (err) throw err;
@@ -103,11 +103,11 @@ app.get("/profile",(req,res)=>{
 })
 
 
-app.post("/logout",(req,res)=>{
+app.post("/api/logout",(req,res)=>{
     res.cookie('token','').json("ok");
 })
 
-app.post('/post', uploadMiddleware.single('file'), async (req, res) => {
+app.post('/api/post', uploadMiddleware.single('file'), async (req, res) => {
     const { title, summary, content, tags } = req.body;
     const { token } = req.cookies;
 
@@ -139,7 +139,7 @@ app.post('/post', uploadMiddleware.single('file'), async (req, res) => {
 });
 
 // GET endpoint to fetch a single post by ID
-app.get('/post/:id', async (req, res) => {
+app.get('/api/post/:id', async (req, res) => {
     try {
         const post = await Posts.findById(req.params.id).populate('author', ['username']);
         if (!post) {
@@ -153,7 +153,7 @@ app.get('/post/:id', async (req, res) => {
 
 
 // PUT endpoint to update a post
-app.put('/post/:id', uploadMiddleware.single('file'), async (req, res) => {
+app.put('/api/post/:id', uploadMiddleware.single('file'), async (req, res) => {
     const { id } = req.params;
     const { title, summary, content, tags } = req.body;
     const { token } = req.cookies;
@@ -188,7 +188,7 @@ app.put('/post/:id', uploadMiddleware.single('file'), async (req, res) => {
 });
 
 
-app.get('/post',async(req,res)=>{
+app.get('/api/post',async(req,res)=>{
     res.json(await Posts.find()
     .populate('author',['username'])
     .sort({createdAt:-1})
@@ -196,7 +196,7 @@ app.get('/post',async(req,res)=>{
 })
 
 
-app.get('/post/:id',async(req,res)=>{
+app.get('/api/post/:id',async(req,res)=>{
     const {id}= req.params;
     // res.json(id);
     const postDoc=await Posts.findById(id).populate('author',['username']);
@@ -206,7 +206,7 @@ app.get('/post/:id',async(req,res)=>{
 
 
 // Route to add a comment to a post
-app.post('/post/:id/comment', async (req, res) => {
+app.post('/api/post/:id/comment', async (req, res) => {
     const { content } = req.body;
     const { token } = req.cookies;
     jwt.verify(token, secret, async (err, info) => {
@@ -222,13 +222,13 @@ app.post('/post/:id/comment', async (req, res) => {
 });
 
 // Route to get comments for a specific post
-app.get('/post/:id/comments', async (req, res) => {
+app.get('/api/post/:id/comments', async (req, res) => {
     const comments = await Comment.find({ postId: req.params.id });
     res.json(comments);
 });
 
 // Route to delete a comment (only the author can delete)
-app.delete('/comment/:id', async (req, res) => {
+app.delete('/api/comment/:id', async (req, res) => {
     const { id } = req.params;
     const { token } = req.cookies;
 
@@ -249,7 +249,7 @@ app.delete('/comment/:id', async (req, res) => {
 
 
 // Route to handle likes on a post
-app.post('/post/:id/like', async (req, res) => {
+app.post('/api/post/:id/like', async (req, res) => {
     const { id } = req.params;
     const { token } = req.cookies;
 
