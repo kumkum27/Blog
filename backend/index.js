@@ -32,10 +32,28 @@ const app=express();
 const salt=bcrypt.genSaltSync(10);
 const secret=process.env.JWT_SECRET;
 
+// app.use(cors({
+//     credentials: true,
+//     origin: process.env.CLIENT_URL || 'http://localhost:5173'
+// }));
+
+
 app.use(cors({
-    credentials: true,
-    origin: process.env.CLIENT_URL || 'http://localhost:5173'
+  credentials: true,
+  origin: function(origin, callback) {
+    const allowedOrigins = [process.env.CLIENT_URL, 'http://localhost:5173', 'https://blog-frontend-zokn.onrender.com'];
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin']
 }));
+
+
+
 
 // app.use(cors({credentials:true,origin:'http://localhost:5173'}));
 app.use(express.json());
