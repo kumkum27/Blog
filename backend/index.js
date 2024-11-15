@@ -88,28 +88,72 @@ app.post('/api/register', async(req,res)=>{
 
 });
 
-app.post('/api/login', async(req,res)=>{
-    const {username,password}=req.body;
-    try{
-    const userDoc= await users.findOne({username});
-    const match= bcrypt.compareSync(password,userDoc.password);
-    if(match){
-        const token=jwt.sign({username,id:userDoc._id},secret,{},(err,token)=>{
-            if(err) throw err;
-            res.cookie("token",token).json({
-                id:userDoc._id,
-                username
-            });
-        });
-    }else{
-        res.status(400).json("not valid user");
+// app.post('/api/login', async(req,res)=>{
+//     const {username,password}=req.body;
+//     try{
+//     const userDoc= await users.findOne({username});
+//     const match= bcrypt.compareSync(password,userDoc.password);
+//     if(match){
+//         const token=jwt.sign({username,id:userDoc._id},secret,{},(err,token)=>{
+//             if(err) throw err;
+//             res.cookie("token",token).json({
+//                 id:userDoc._id,
+//                 username
+//             });
+//         });
+//     }else{
+//         res.status(400).json("not valid user");
+//     }
+//     }catch(e){
+//         console.log(e);
+//         res.status(400).json(e);
+//     }    
+// })
+
+
+
+
+app.post('/api/login', async (req, res) => {
+    const { username, password } = req.body;
+    try {
+        const userDoc = await users.findOne({ username });
+        if (!userDoc) {
+            return res.status(400).json("User not found");
+        }
+        
+        const match = bcrypt.compareSync(password, userDoc.password);
+        if (match) {
+            jwt.sign(
+                { username, id: userDoc._id },
+                secret,
+                {},
+                (err, token) => {
+                    if (err) throw err;
+                    // Set cookie with proper options
+                    res.cookie('token', token, {
+                        httpOnly: true,
+                        secure: process.env.NODE_ENV === 'production', // Only use HTTPS in production
+                        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+                        maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+                        path: '/'
+                    }).json({
+                        id: userDoc._id,
+                        username
+                    });
+                }
+            );
+        } else {
+            res.status(400).json("Wrong credentials");
+        }
+    } catch (e) {
+        console.error('Login error:', e);
+        res.status(500).json("Internal server error");
     }
-    }catch(e){
-        console.log(e);
-        res.status(400).json(e);
-    }
-    
-})
+});
+
+
+
+
 
 app.get("/api/profile", (req, res) => {
     const { token } = req.cookies;
