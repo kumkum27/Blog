@@ -40,7 +40,7 @@ app.use(cors({
 // app.use(cors({credentials:true,origin:'http://localhost:5173'}));
 app.use(express.json());
 app.use(cookieParser());
-app.use('/uploads',express.static(__dirname + '/uploads'))
+app.use('/api/uploads',express.static(__dirname + '/uploads'))
 
 // mongoose.connect('mongodb+srv://blog:yNC7v0MBEzULhZR2@cluster0.ezirbjy.mongodb.net/?retryWrites=true&w=majority');
 
