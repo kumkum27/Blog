@@ -224,20 +224,55 @@ app.get('/api/post/:id',async(req,res)=>{
 
 
 // Route to add a comment to a post
+// app.post('/api/post/:id/comment', async (req, res) => {
+//     const { content } = req.body;
+//     const { token } = req.cookies;
+//     jwt.verify(token, secret, async (err, info) => {
+//         if (err) return res.status(401).json('Unauthorized');
+//         const comment = new Comment({
+//             postId: req.params.id,
+//             author: info.id,
+//             content
+//         });
+//         await comment.save();
+//         res.json(comment);
+//     });
+// });
+
+
+
+
+
 app.post('/api/post/:id/comment', async (req, res) => {
     const { content } = req.body;
-    const { token } = req.cookies;
-    jwt.verify(token, secret, async (err, info) => {
+    const { token } = req.cookies;  // Get the token from the cookies
+
+    if (!token) {
+        return res.status(401).json("No token provided");
+    }
+
+    jwt.verify(token, secret, {}, async (err, userInfo) => {
         if (err) return res.status(401).json('Unauthorized');
-        const comment = new Comment({
-            postId: req.params.id,
-            author: info.id,
-            content
-        });
-        await comment.save();
-        res.json(comment);
+
+        // Proceed to add the comment
+        try {
+            const comment = await Comment.create({
+                content,
+                postId: req.params.id,
+                author: userInfo.id
+            });
+            await comment.save();
+            res.status(200).json(comment);
+        } catch (error) {
+            res.status(400).json({ error: error.message });
+        }
     });
 });
+
+
+
+
+
 
 // Route to get comments for a specific post
 app.get('/api/post/:id/comments', async (req, res) => {
