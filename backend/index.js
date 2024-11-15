@@ -172,9 +172,6 @@ app.get("/api/profile", (req, res) => {
 });
 
 
-    // res.json(req.cookies);
-})
-
 
 app.post("/api/logout",(req,res)=>{
     res.cookie('token','').json("ok");
