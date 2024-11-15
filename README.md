@@ -1,10 +1,10 @@
 # Blog Website  
 
-A feature-rich blog platform allowing users to create, edit, delete, and explore posts with features like authentication, likes, comments, image uploads, and search functionality.
+A feature-rich blog platform allowing users to create, edit, and explore posts with features like authentication, likes, comments, image uploads, and search functionality.
 
 ## Features
 - **User Authentication**: Secure login and registration.
-- **Create & Manage Posts**: Write, edit, and delete blogs.
+- **Create & Manage Posts**: Write, edit blogs.
 - **Image Uploads**: Upload images with posts.
 - **Likes & Comments**: Engage with blogs by liking and commenting.
 - **Search Functionality**: Easily find posts using keywords.
